@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sales - Smart Sales Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+        }
+
+        .sidebar {
+            position: fixed;
+            width: 240px;
+            height: 100vh;
+            background: #111827;
+            color: white;
+            padding: 25px 15px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 35px;
+            padding-left: 10px;
+        }
+
+        .logo span {
+            color: #3b82f6;
+        }
+
+        .sidebar a {
+            display: block;
+            color: #d1d5db;
+            text-decoration: none;
+            padding: 14px 15px;
+            margin: 6px 0;
+            border-radius: 8px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .main {
+            margin-left: 240px;
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .topbar h1 {
+            font-size: 28px;
+            color: #111827;
+        }
+
+        .sale-form {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .sale-form h2 {
+            margin-bottom: 20px;
+            color: #111827;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            align-items: end;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #374151;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        .sell-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .sell-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .sales-table {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            overflow-x: auto;
+        }
+
+        .sales-table h2 {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+
+        th,
+        td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .amount {
+            font-weight: bold;
+            color: #16a34a;
+        }
+
+        /* BILL BUTTON */
+        .bill-btn {
+            display: inline-block;
+            background: #16a34a;
+            color: white;
+            padding: 8px 13px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .bill-btn:hover {
+            background: #15803d;
+        }
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                width: 190px;
+            }
+
+            .main {
+                margin-left: 190px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+        <div class="logo">
+            Smart<span>Sales</span>
+        </div>
+
+        <a href="{{ url_for('home') }}">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('products_page') }}">
+            Products
+        </a>
+
+        <a href="{{ url_for('sales_page') }}" class="active">
+            Sales
+        </a>
+
+        <a href="{{ url_for('team_page') }}">
+            Team
+        </a>
+
+        <a href="{{ url_for('analytics_page') }}">
+            Analytics
+        </a>
+
+    </div>
+
+
+    <!-- MAIN -->
+    <div class="main">
+
+        <div class="topbar">
+            <h1>Sales</h1>
+        </div>
+
+
+        <!-- ADD SALE FORM -->
+        <div class="sale-form">
+
+            <h2>Sell Product</h2>
+
+            <form method="POST" action="{{ url_for('add_sale') }}">
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label>Select Product</label>
+
+                        <select name="product_id" required>
+
+                            <option value="">
+                                -- Select Product --
+                            </option>
+
+                            {% for product in products %}
+
+                            <option value="{{ product.id }}">
+
+                                {{ product.name }}
+                                - ₹{{ product.price }}
+                                (Stock: {{ product.stock }})
+
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>Quantity</label>
+
+                        <input
+                            type="number"
+                            name="quantity"
+                            min="1"
+                            value="1"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div>
+
+                        <button type="submit" class="sell-btn">
+                            Sell Product
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <!-- SALES HISTORY -->
+        <div class="sales-table">
+
+            <h2>Sales History</h2>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Total Amount</th>
+                        <th>Date</th>
+                        <th>Bill</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for sale in sales %}
+
+                    <tr>
+
+                        <td>
+                            {{ sale.id }}
+                        </td>
+
+                        <td>
+                            {{ sale.product_name }}
+                        </td>
+
+                        <td>
+                            {{ sale.quantity }}
+                        </td>
+
+                        <td class="amount">
+                            ₹{{ sale.total_amount }}
+                        </td>
+
+                        <td>
+                            {{ sale.sale_date }}
+                        </td>
+
+                        <td>
+
+                            <a
+                                href="{{ url_for('bill', sale_id=sale.id) }}"
+                                class="bill-btn"
+                            >
+                                🧾 Bill
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+
+                        <td colspan="6">
+                            No sales recorded yet.
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

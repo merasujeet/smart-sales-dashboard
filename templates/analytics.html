@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Analytics - Smart Sales Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #1e293b;
+        }
+
+        nav {
+            background: #1e293b;
+            padding: 18px 30px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 25px;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            color: #38bdf8;
+        }
+
+        .container {
+            padding: 30px;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        /* =========================
+           SUMMARY CARDS
+        ========================= */
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h3 {
+            color: #64748b;
+            font-size: 15px;
+            margin-bottom: 12px;
+        }
+
+        .card .value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .profit {
+            color: #16a34a !important;
+        }
+
+        .orders {
+            color: #7c3aed !important;
+        }
+
+        /* =========================
+           ANALYTICS SECTIONS
+        ========================= */
+
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .section h2 {
+            margin-bottom: 20px;
+            color: #1e293b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #1e293b;
+            color: white;
+            padding: 14px;
+            text-align: left;
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .empty {
+            text-align: center;
+            color: #64748b;
+            padding: 20px;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .container {
+                padding: 15px;
+            }
+
+            nav {
+                padding: 15px;
+            }
+
+            nav a {
+                display: inline-block;
+                margin-bottom: 10px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            th,
+            td {
+                padding: 10px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- =========================
+         NAVIGATION
+    ========================= -->
+
+    <nav>
+        <a href="/">Dashboard</a>
+        <a href="/products">Products</a>
+        <a href="/sales">Sales</a>
+        <a href="/team">Team</a>
+        <a href="/analytics">Analytics</a>
+        <a href="/logout">Logout</a>
+    </nav>
+
+
+    <div class="container">
+
+        <h1>📊 Analytics</h1>
+
+
+        <!-- =========================
+             SUMMARY CARDS
+        ========================= -->
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>💰 Total Revenue</h3>
+
+                <div class="value">
+                    ₹{{ "%.2f"|format(total_revenue or 0) }}
+                </div>
+            </div>
+
+
+            <div class="card">
+                <h3>🛒 Total Orders</h3>
+
+                <div class="value orders">
+                    {{ total_orders }}
+                </div>
+            </div>
+
+
+            <div class="card">
+                <h3>📈 Total Profit</h3>
+
+                <div class="value profit">
+                    ₹{{ "%.2f"|format(total_profit or 0) }}
+                </div>
+            </div>
+
+
+            <div class="card">
+                <h3>🏆 Top Products</h3>
+
+                <div class="value">
+                    {{ top_products|length }}
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             TOP SELLING PRODUCTS
+        ========================= -->
+
+        <div class="section">
+
+            <h2>🏆 Top Selling Products</h2>
+
+            {% if top_products %}
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Product</th>
+                        <th>Quantity Sold</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for product in top_products %}
+
+                    <tr>
+
+                        <td>
+                            #{{ loop.index }}
+                        </td>
+
+                        <td>
+                            {{ product.name }}
+                        </td>
+
+                        <td>
+                            {{ product.total_sold }}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            {% else %}
+
+            <div class="empty">
+                No sales data available yet.
+            </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- =========================
+             REVENUE BY PRODUCT
+        ========================= -->
+
+        <div class="section">
+
+            <h2>💰 Revenue by Product</h2>
+
+            {% if revenue_by_product %}
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Rank</th>
+                        <th>Product</th>
+                        <th>Total Revenue</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for product in revenue_by_product %}
+
+                    <tr>
+
+                        <td>
+                            #{{ loop.index }}
+                        </td>
+
+                        <td>
+                            {{ product.name }}
+                        </td>
+
+                        <td>
+                            ₹{{ "%.2f"|format(product.total_revenue or 0) }}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            {% else %}
+
+            <div class="empty">
+                No revenue data available yet.
+            </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- =========================
+             PROFIT INFORMATION
+        ========================= -->
+
+        <div class="section">
+
+            <h2>📈 Business Profit Analysis</h2>
+
+            <p style="color:#64748b; line-height:1.7;">
+                Profit is calculated automatically from the difference between
+                selling price and cost price for every product sold.
+            </p>
+
+            <p style="margin-top:15px; font-weight:bold;">
+                Formula:
+                <span style="color:#16a34a;">
+                    (Selling Price − Cost Price) × Quantity Sold
+                </span>
+            </p>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
+```

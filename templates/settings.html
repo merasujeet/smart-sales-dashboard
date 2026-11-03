@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Settings - Smart Sales Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .header {
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #777;
+        }
+
+        .box {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .box h2 {
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #777;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .help {
+            margin-top: 6px;
+            color: #777;
+            font-size: 13px;
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .save-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .back-btn {
+            display: block;
+            text-align: center;
+            margin-top: 12px;
+            padding: 13px;
+            background: #e5e7eb;
+            color: #222;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .back-btn:hover {
+            background: #d1d5db;
+        }
+
+        .icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <div class="icon">⚙️</div>
+
+        <h1>Settings</h1>
+
+        <p>
+            Manage your Smart Sales Dashboard settings.
+        </p>
+
+    </div>
+
+
+    <div class="box">
+
+        <h2>🏢 Business Settings</h2>
+
+        <p class="subtitle">
+            Configure your business information.
+        </p>
+
+
+        <form
+            method="POST"
+            action="{{ url_for('settings_page') }}"
+        >
+
+            <!-- BUSINESS NAME -->
+            <div class="form-group">
+
+                <label>Business Name</label>
+
+                <input
+                    type="text"
+                    name="business_name"
+                    value="{{ settings.business_name }}"
+                    required
+                >
+
+            </div>
+
+
+            <!-- CURRENCY -->
+            <div class="form-group">
+
+                <label>Currency</label>
+
+                <select name="currency">
+
+                    <option
+                        value="₹"
+                        {% if settings.currency == '₹' %}selected{% endif %}
+                    >
+                        ₹ - Indian Rupee
+                    </option>
+
+                    <option
+                        value="$"
+                        {% if settings.currency == '$' %}selected{% endif %}
+                    >
+                        $ - US Dollar
+                    </option>
+
+                    <option
+                        value="€"
+                        {% if settings.currency == '€' %}selected{% endif %}
+                    >
+                        € - Euro
+                    </option>
+
+                    <option
+                        value="£"
+                        {% if settings.currency == '£' %}selected{% endif %}
+                    >
+                        £ - Pound
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- LOW STOCK LIMIT -->
+            <div class="form-group">
+
+                <label>🔔 Low Stock Alert Limit</label>
+
+                <input
+                    type="number"
+                    name="low_stock_limit"
+                    value="{{ settings.low_stock_limit }}"
+                    min="0"
+                    required
+                >
+
+                <p class="help">
+                    Example: If you enter 10, products with 10 or fewer
+                    items will be considered low stock.
+                </p>
+
+            </div>
+
+
+            <!-- SAVE -->
+            <button
+                type="submit"
+                class="save-btn"
+            >
+                💾 Save Settings
+            </button>
+
+        </form>
+
+
+        <!-- BACK -->
+        <a
+            href="{{ url_for('home') }}"
+            class="back-btn"
+        >
+            ← Back to Dashboard
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

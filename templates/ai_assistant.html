@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Business Assistant</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #777;
+        }
+
+        .chat-box {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .messages {
+            height: 450px;
+            overflow-y: auto;
+            padding: 25px;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 18px;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.ai {
+            justify-content: flex-start;
+        }
+
+        .bubble {
+            max-width: 75%;
+            padding: 13px 17px;
+            border-radius: 15px;
+            line-height: 1.5;
+        }
+
+        .user .bubble {
+            background: #2563eb;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai .bubble {
+            background: #f1f5f9;
+            color: #222;
+            border-bottom-left-radius: 4px;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+            padding: 18px;
+            border-top: 1px solid #eee;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .input-area input:focus {
+            border-color: #2563eb;
+        }
+
+        .send-btn {
+            border: none;
+            background: #2563eb;
+            color: white;
+            padding: 0 22px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .send-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .suggestions {
+            padding: 0 20px 20px;
+        }
+
+        .suggestions p {
+            color: #777;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .suggestion {
+            border: 1px solid #ddd;
+            background: white;
+            padding: 9px 12px;
+            border-radius: 8px;
+            margin: 4px;
+            cursor: pointer;
+        }
+
+        .suggestion:hover {
+            background: #f1f5f9;
+        }
+
+        .back-btn {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            padding: 13px;
+            background: #e5e7eb;
+            color: #222;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .back-btn:hover {
+            background: #d1d5db;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px auto;
+            }
+
+            .messages {
+                height: 400px;
+            }
+
+            .bubble {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>🤖 AI Business Assistant</h1>
+        <p>Ask questions about your sales, profit, orders and products.</p>
+    </div>
+
+    <div class="chat-box">
+
+        <div class="messages" id="messages">
+
+            <div class="message ai">
+                <div class="bubble">
+                    👋 Hello! I am your AI Business Assistant.<br><br>
+                    Ask me something like:
+                    <br>
+                    <strong>"What are today's sales?"</strong>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="suggestions">
+            <p>Try asking:</p>
+
+            <button class="suggestion"
+                    onclick="askQuestion('What are today\\'s sales?')">
+                Today's Sales
+            </button>
+
+            <button class="suggestion"
+                    onclick="askQuestion('What is my total revenue?')">
+                Total Revenue
+            </button>
+
+            <button class="suggestion"
+                    onclick="askQuestion('What is my total profit?')">
+                Total Profit
+            </button>
+
+            <button class="suggestion"
+                    onclick="askQuestion('Which product is top selling?')">
+                Top Selling Product
+            </button>
+
+            <button class="suggestion"
+                    onclick="askQuestion('Which products are low stock?')">
+                Low Stock
+            </button>
+        </div>
+
+        <form class="input-area" id="chatForm">
+
+            <input
+                type="text"
+                id="question"
+                placeholder="Ask your business question..."
+                autocomplete="off"
+                required
+            >
+
+            <button type="submit" class="send-btn">
+                Send
+            </button>
+
+        </form>
+
+    </div>
+
+    <a href="{{ url_for('home') }}" class="back-btn">
+        ← Back to Dashboard
+    </a>
+
+</div>
+
+
+<script>
+
+const form = document.getElementById("chatForm");
+const input = document.getElementById("question");
+const messages = document.getElementById("messages");
+
+
+function addMessage(text, type) {
+
+    const message = document.createElement("div");
+
+    message.className = "message " + type;
+
+    const bubble = document.createElement("div");
+
+    bubble.className = "bubble";
+
+    bubble.textContent = text;
+
+    message.appendChild(bubble);
+
+    messages.appendChild(message);
+
+    messages.scrollTop = messages.scrollHeight;
+}
+
+
+function askQuestion(question) {
+
+    input.value = question;
+
+    form.dispatchEvent(new Event("submit"));
+
+}
+
+
+form.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const question = input.value.trim();
+
+    if (!question) {
+        return;
+    }
+
+    addMessage(question, "user");
+
+    input.value = "";
+
+    addMessage("Thinking...", "ai");
+
+    const thinkingMessage =
+        messages.lastElementChild;
+
+    try {
+
+        const response = await fetch(
+            "{{ url_for('ai_assistant') }}",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+
+                body:
+                    "question=" +
+                    encodeURIComponent(question)
+            }
+        );
+
+        const data = await response.json();
+
+        thinkingMessage.remove();
+
+        addMessage(data.answer, "ai");
+
+    } catch (error) {
+
+        thinkingMessage.remove();
+
+        addMessage(
+            "Sorry, I could not connect to the AI assistant.",
+            "ai"
+        );
+    }
+
+});
+
+</script>
+
+</body>
+</html>

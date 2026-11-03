@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Invoice - Smart Sales Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f3f4f6;
+            padding: 40px;
+        }
+
+        .invoice {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.10);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .company h1 {
+            color: #2563eb;
+            font-size: 28px;
+        }
+
+        .company p {
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .invoice-info {
+            text-align: right;
+        }
+
+        .invoice-info h2 {
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .invoice-info p {
+            color: #4b5563;
+            margin: 4px 0;
+        }
+
+        .customer {
+            margin-bottom: 30px;
+        }
+
+        .customer h3 {
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .customer p {
+            color: #6b7280;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            background: #2563eb;
+            color: white;
+            padding: 14px;
+            text-align: left;
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .total-section {
+            margin-top: 25px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .total-box {
+            width: 300px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+        }
+
+        .grand-total {
+            border-top: 2px solid #111827;
+            margin-top: 10px;
+            padding-top: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #16a34a;
+        }
+
+        .buttons {
+            text-align: center;
+            margin-top: 35px;
+        }
+
+        .btn {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            margin: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .print-btn {
+            background: #2563eb;
+            color: white;
+        }
+
+        .back-btn {
+            background: #6b7280;
+            color: white;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 35px;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        @media print {
+
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .invoice {
+                box-shadow: none;
+                border-radius: 0;
+                max-width: 100%;
+            }
+
+            .buttons {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="invoice">
+
+        <!-- HEADER -->
+        <div class="header">
+
+            <div class="company">
+                <h1>SmartSales</h1>
+                <p>Smart Sales Dashboard</p>
+            </div>
+
+            <div class="invoice-info">
+
+                <h2>INVOICE</h2>
+
+                <p>
+                    <strong>Bill No:</strong>
+                    #{{ sale.id }}
+                </p>
+
+                <p>
+                    <strong>Date:</strong>
+                    {{ sale.sale_date }}
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- CUSTOMER -->
+        <div class="customer">
+
+            <h3>Sales Information</h3>
+
+            <p>
+                Product sale generated from Smart Sales Dashboard
+            </p>
+
+        </div>
+
+
+        <!-- PRODUCT TABLE -->
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price / Unit</th>
+                    <th class="right">Total</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+
+                    <td>
+                        {{ sale.product_name }}
+                    </td>
+
+                    <td>
+                        {{ sale.quantity }}
+                    </td>
+
+                    <td>
+                        ₹{{ sale.selling_price }}
+                    </td>
+
+                    <td class="right">
+                        ₹{{ sale.total_amount }}
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+
+        <!-- TOTAL -->
+        <div class="total-section">
+
+            <div class="total-box">
+
+                <div class="total-row">
+
+                    <span>Subtotal</span>
+
+                    <span>
+                        ₹{{ sale.total_amount }}
+                    </span>
+
+                </div>
+
+                <div class="total-row">
+
+                    <span>Tax</span>
+
+                    <span>
+                        ₹0
+                    </span>
+
+                </div>
+
+                <div class="total-row grand-total">
+
+                    <span>Grand Total</span>
+
+                    <span>
+                        ₹{{ sale.total_amount }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- BUTTONS -->
+        <div class="buttons">
+
+            <button
+                class="btn print-btn"
+                onclick="window.print()"
+            >
+                🖨️ Print / Save PDF
+            </button>
+
+            <a
+                href="{{ url_for('sales_page') }}"
+                class="btn back-btn"
+            >
+                ← Back to Sales
+            </a>
+
+        </div>
+
+
+        <!-- FOOTER -->
+        <div class="footer">
+
+            Thank you for your business!
+
+        </div>
+
+    </div>
+
+</body>
+</html>
